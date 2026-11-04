@@ -5,6 +5,23 @@ import { InterrogationController } from '../controllers/interrogation.controller
 
 export const apiRouter = Router();
 
+// Root /api Welcome
+apiRouter.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to Murder Mystery Backend API',
+    status: 'online',
+    version: '1.0.0',
+    endpoints: [
+      '/api/health',
+      '/api/puzzle/critical-loop',
+      '/api/interrogation/ask',
+      '/api/session/save',
+      '/api/session/:sessionId',
+      '/api/leaderboard'
+    ]
+  });
+});
+
 // 1. Health & Telemetry
 apiRouter.get('/health', GameController.getHealth);
 
