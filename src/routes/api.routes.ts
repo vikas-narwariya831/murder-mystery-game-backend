@@ -14,6 +14,8 @@ apiRouter.get('/', (req, res) => {
     endpoints: [
       '/api/health',
       '/api/puzzle/critical-loop',
+      '/api/puzzle/safe/generate',
+      '/api/puzzle/safe/verify',
       '/api/interrogation/ask',
       '/api/session/save',
       '/api/session/:sessionId',
@@ -25,15 +27,19 @@ apiRouter.get('/', (req, res) => {
 // 1. Health & Telemetry
 apiRouter.get('/health', GameController.getHealth);
 
-// 2. Cybersecurity AI Puzzle
+// 2. Safe Passcode Generation & Verification
+apiRouter.get('/puzzle/safe/generate', PuzzleController.generateSafePuzzle);
+apiRouter.post('/puzzle/safe/verify', PuzzleController.verifyPasscode);
+
+// 3. Cybersecurity AI Puzzle
 apiRouter.get('/puzzle/critical-loop', PuzzleController.getCriticalLoopPuzzle);
 
-// 3. Suspect Interrogation AI Proxy
+// 4. Suspect Interrogation AI Proxy
 apiRouter.post('/interrogation/ask', InterrogationController.askSuspect);
 
-// 4. Session & Save Progress
+// 5. Session & Save Progress
 apiRouter.post('/session/save', GameController.saveSession);
 apiRouter.get('/session/:sessionId', GameController.getSession);
 
-// 5. Forensic Leaderboard
+// 6. Forensic Leaderboard
 apiRouter.get('/leaderboard', GameController.getLeaderboard);
