@@ -5,11 +5,31 @@ import { apiRouter } from './routes/api.routes.js';
 
 const app = express();
 
-// Middlewares
-app.use(cors({
-  origin: config.frontendUrl || '*',
-  credentials: true
-}));
+// Middlewares - CORS configured for production frontend & preview deployments
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      const cleanOrigin = origin.replace(/\/+$/, '');
+      const isExplicitlyAllowed = config.frontendUrls.some(
+        (allowed) => allowed.replace(/\/+$/, '') === cleanOrigin
+      );
+      const isVercelDomain = cleanOrigin.endsWith('.vercel.app');
+
+      if (isExplicitlyAllowed || isVercelDomain) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  })
+);
+
 app.use(express.json());
 
 // Root endpoint
@@ -34,9 +54,12 @@ app.listen(config.port, () => {
   console.log(`   - GET  /api`);
   console.log(`   - GET  /api/health`);
   console.log(`   - GET  /api/puzzle/critical-loop`);
+  console.log(`   - POST /api/puzzle/safe/verify`);
   console.log(`   - POST /api/interrogation/ask`);
   console.log(`   - POST /api/session/save`);
   console.log(`   - GET  /api/session/:sessionId`);
   console.log(`   - GET  /api/leaderboard`);
   console.log(`=================================================`);
 });
+
+export default app;
